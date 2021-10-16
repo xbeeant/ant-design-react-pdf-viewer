@@ -1,0 +1,87 @@
+/**
+ * A React component to view a PDF document
+ *
+ * @see https://react-pdf-viewer.dev
+ * @license https://react-pdf-viewer.dev/license
+ * @copyright 2019-2021 Nguyen Huu Phuoc <me@phuoc.ng>
+ */
+
+.rpv-default-layout__container {
+    /* Border */
+    border: 1px solid var(--rpv-default-layout__container-border-color);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    /* Full size */
+    height: 100%;
+    width: 100%;
+}
+
+.rpv-default-layout__toolbar {
+    background-color: var(--rpv-default-layout__toolbar-background-color);
+    border-bottom: 1px solid var(--rpv-default-layout__toolbar-border-bottom-color);
+    padding: 0.25rem;
+}
+
+.rpv-default-layout__sidebar {
+    &--opened {
+        /* Absolute position */
+        left: 0;
+        position: absolute;
+        top: 0;
+
+        /* Size */
+        height: 100%;
+        width: 12rem;
+
+        /* Display it on top of pages */
+        background-color: var(--rpv-default-layout__sidebar--opened-background-color);
+        z-index: 1;
+    }
+
+    &--ltr {
+        border-right: 1px solid var(--rpv-default-layout__sidebar-border-color);
+    }
+    &--rtl {
+        border-left: 1px solid var(--rpv-default-layout__sidebar-border-color);
+    }
+}
+
+.rpv-default-layout__main {
+    display: flex;
+    flex-grow: 1;
+
+    /* Fix the scroll issue on Safari */
+    height: 100%;
+    overflow: hidden;
+
+    /* Used to position the sidebar */
+    position: relative;
+
+    &--rtl {
+        direction: rtl;
+    }
+}
+
+.rpv-default-layout__body {
+    background-color: var(--rpv-default-layout__body-background-color);
+    flex: 1;
+    overflow: auto;
+}
+
+@media (min-width: 768px) {
+    .rpv-default-layout__sidebar--opened {
+        width: 16rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .rpv-default-layout__sidebar--opened {
+        background: inherit;
+        position: inherit;
+        width: 20rem;
+        z-index: inherit;
+    }
+}
