@@ -1,13 +1,49 @@
-import React, { useContext } from 'react';
+import React, {useContext, useState} from 'react';
 import {Viewer, Worker, classNames, TextDirection, ThemeContext, LocalizationContext} from '@react-pdf-viewer/core';
 import zh_CN from '@react-pdf-viewer/locales/lib/zh_CN.json';
 import { toolbarPlugin } from '@react-pdf-viewer/toolbar';
 import { MoreActionsPopover} from "./MoreActionsPopover";
+
 import '@react-pdf-viewer/core/lib/styles/index.css';
 
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/toolbar/lib/styles/index.css';
 
+const watermark = (props) => {
+  const { mark, canvasLayer, scale, annotationLayer, textLayer } = props;
+  return (
+    <>
+      {canvasLayer.children}
+      <div
+        style={{
+          alignItems: 'center',
+          display: 'flex',
+          height: '100%',
+          justifyContent: 'center',
+          left: 0,
+          position: 'absolute',
+          top: 0,
+          width: '100%',
+        }}
+      >
+        <div
+          style={{
+            color: 'rgba(0, 0, 0, 0.2)',
+            fontSize: `${6 * scale}rem`,
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            transform: 'rotate(-45deg)',
+            userSelect: 'none',
+          }}
+        >
+          {mark}
+        </div>
+      </div>
+      {annotationLayer.children}
+      {textLayer.children}
+    </>
+  )
+};
 
 const PdfViewer = () => {
   const toolbarPluginInstance = toolbarPlugin();
@@ -16,6 +52,8 @@ const PdfViewer = () => {
   const { direction } = useContext(ThemeContext);
   const [l10n, setL10n] = React.useState(zh_CN);
   const localizationContext = { l10n, setL10n };
+  // todo 自定义权限集
+  const [permissions, setPermissions] = useState();
 
   return (
     <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.10.377/build/pdf.worker.js">
@@ -108,18 +146,25 @@ const PdfViewer = () => {
                           <EnterFullScreen />
                         </div>
                       </div>
-                      <div className="rpv-core__display--hidden rpv-core__display--block-medium">
-                        <div className="rpv-toolbar__item">
-                          <Download />
-                        </div>
-                      </div>
-                      <div className="rpv-core__display--hidden rpv-core__display--block-medium">
-                        <div className="rpv-toolbar__item">
-                          <Print />
-                        </div>
-                      </div>
+                      {
+                        permissions?.download && (
+                          <div className="rpv-core__display--hidden rpv-core__display--block-medium">
+                            <div className="rpv-toolbar__item">
+                              <Download />
+                            </div>
+                          </div>
+                        )
+                      }
+                      {
+                        permissions?.print && (
+                          <div className="rpv-core__display--hidden rpv-core__display--block-medium">
+                            <div className="rpv-toolbar__item">
+                              <Print />
+                            </div>
+                          </div>
+                        )}
                       <div className="rpv-toolbar__item">
-                        <MoreActionsPopover toolbarSlot={toolbarSlot} />
+                        <MoreActionsPopover toolbarSlot={toolbarSlot} permissions={{selective: false}} />
                       </div>
                     </div>
                   </div>
@@ -135,6 +180,7 @@ const PdfViewer = () => {
             }}
           >
             <Viewer
+              renderPage={(props => watermark({...props, mark: 'Watermark Draft'}))}
               plugins={[toolbarPluginInstance]}
               fileUrl={`./test.pdf`}
             />

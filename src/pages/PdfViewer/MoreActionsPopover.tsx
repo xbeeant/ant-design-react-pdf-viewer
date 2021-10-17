@@ -24,12 +24,15 @@ import { SelectionMode } from '@react-pdf-viewer/selection-mode';
 
 import { MoreIcon } from './MoreIcon';
 import type { ToolbarSlot } from './types/ToolbarSlot';
+import type { Permissions } from './types/Permissions';
 
 const PORTAL_OFFSET = { left: 0, top: 8 };
 
+
 export const MoreActionsPopover: React.FC<{
     toolbarSlot: ToolbarSlot;
-}> = ({ toolbarSlot }) => {
+    permissions?: Permissions;
+}> = ({ toolbarSlot, permissions }) => {
     const { l10n } = React.useContext(LocalizationContext);
     const { direction } = React.useContext(ThemeContext);
     const portalPosition = direction === TextDirection.RightToLeft ? Position.BottomLeft : Position.BottomRight;
@@ -103,7 +106,9 @@ export const MoreActionsPopover: React.FC<{
                 <RotateForwardMenuItem onClick={toggle} />
                 <RotateBackwardMenuItem onClick={toggle} />
                 <MenuDivider />
-                <SwitchSelectionModeMenuItem mode={SelectionMode.Text} onClick={toggle} />
+                {
+                  permissions?.selective && <SwitchSelectionModeMenuItem mode={SelectionMode.Text} onClick={toggle} />
+                }
                 <SwitchSelectionModeMenuItem mode={SelectionMode.Hand} onClick={toggle} />
                 <MenuDivider />
                 <SwitchScrollModeMenuItem mode={ScrollMode.Vertical} onClick={toggle} />
